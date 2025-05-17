@@ -24,17 +24,25 @@ class GameSprite(sprite.Sprite):
         window.blit(self.image, (self.rect.x, self.rect.y))
 
 class Dino(GameSprite):
+    def __init__(self, player_image, player_x, player_y, size_x, size_y, player_speed):
+        super().__init__(player_image, player_x, player_y, size_x, size_y, player_speed)
+        self.jump_p = 20
+        self.jump_h = 0
+        self.jumped = False
+        self.gravity = 1
+        self.y_o = player_y
+        self.ground = True
+
     def update(self):
-        self.rect.x += self.speed
+        if self.jumped:
+            self.rect_y -= self.jump_h
+            self.jump_h -= self.gravity
 
 class Cactus(GameSprite):
     def update(self):
-        global lost
         self.rect.x -= self.speed
-        if self.rect.x < W:
-            self.rect.x = 0
-            self.rect.x = 50
-            lost += 1
+
+
 
 dino = Dino('Dino1.png', 50, 250, 120, 150, 0)
 cactuses = sprite.Group()
