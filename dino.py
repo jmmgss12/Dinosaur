@@ -7,7 +7,7 @@ W = 700
 window = display.set_mode((W, H))
 display.set_caption('Динозаврик')
 back = transform.scale(image.load("desert.jpg"), (W, H))
-
+lost = 0
 
 clock = time.Clock()
 
@@ -27,7 +27,20 @@ class Dino(GameSprite):
     def update(self):
         self.rect.x += self.speed
 
-dino = Dino('Dino1.png', W//2, H-110, 80, 100, 5)
+class Cactus(GameSprite):
+    def update(self):
+        global lost
+        self.rect.x -= self.speed
+        if self.rect.x < W:
+            self.rect.x = 0
+            self.rect.x = 50
+            lost += 1
+
+dino = Dino('Dino1.png', 50, 250, 120, 150, 0)
+cactuses = sprite.Group()
+for i in range(1):
+    cactus = Cactus('Cactus.png', 700, 250, 120, 150, randint(1, 3))
+    cactuses.add(cactus)
 
 
 game = True
@@ -40,6 +53,9 @@ while game:
         window.blit(back, (0, 0))
         dino.update()
         dino.reset()
+        cactus.update()
+        cactus.reset()
+
     display.update()
     clock.tick(60)
 
