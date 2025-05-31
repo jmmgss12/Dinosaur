@@ -15,6 +15,9 @@ font.init()
 font1 = font.SysFont('Arial', 36)
 score = 0
 
+mixer.init()
+jump_sound = mixer.Sound('jump.ogg')
+
 
 class GameSprite(sprite.Sprite):
     def __init__(self, player_image, player_x, player_y, size_x, size_y, player_speed):
@@ -43,7 +46,7 @@ class Dino(GameSprite):
 
     def update(self):
         if self.jumped:
-            self.rect.y -= self.jump_h # исправил self.rect_y
+            self.rect.y -= self.jump_h
             self.jump_h -= self.gravity
         
             self.image = self.image2
@@ -52,13 +55,14 @@ class Dino(GameSprite):
                 self.rect.y = self.y_o
                 self.jumped = False
                 self.jump_h = self.jump_p
-                self.ground = True # исправил 0 на True
+                self.ground = True 
                 self.image = self.image1
             
         keys = key.get_pressed()
-        if keys[K_SPACE] and self.rect.y == self.y_o: # исправил y_o
-            self.jump() # исправил self.jumped()
-                
+        if keys[K_SPACE] and self.rect.y == self.y_o:
+            self.jump()
+            jump_sound.play()
+                         
 
     def jump(self):
         if not self.jumped and self.ground:
@@ -72,19 +76,13 @@ class Cactus(GameSprite):
 
         def update(self):
             self.rect.x -= self.speed
-            if self.rect.x < -self.rect.width:  # создаем кактус с правой стороны
+            if self.rect.x < -self.rect.width: 
                 self.rect.x = W + randint(50, 200)
 
-            # screen_width = window.display.get_surface().get_width()
-            # if self.rect.right < 0:
-            #     self.rect.left = screen_width 
-            # elif self.rect.left > screen_width:
-            #     self.rect.right = 0
+
 
         def reset(self):
-            window.blit(self.image, (self.rect.x, self.rect.y))
-                    
-                
+            window.blit(self.image, (self.rect.x, self.rect.y))           
 
 
 dino = Dino('Dino1.png', 50, 300, 80, 100, 0)
@@ -105,7 +103,7 @@ def restart_game():
     dino.ground = True
     dino.jump_h = dino.jump_p
 
-    cactus.rect.x = 600  # начальная позиция кактуса
+    cactus.rect.x = 600  
     score = 0
     finish = False
     cactus2_active = False
@@ -144,23 +142,18 @@ while game:
             cactus3.update()
             cactus3.reset()
 
-        # Проверка на столкновение
         if sprite.collide_rect(dino, cactus) or (cactus2_active and sprite.collide_rect(dino, cactus2)) or (cactus3_active and sprite.collide_rect(dino, cactus3)):
             finish = True
 
-        # Подсчет очков
         score += 1
         score_text = font1.render(f'Очки: {score}', True, (0, 0, 0))
         window.blit(score_text, (10, 10))
     
     else:
-        # Экран поражения
         lose_text1 = font1.render('Ты проиграл! Нажми ПРОБЕЛ', True, (255, 0, 0))
         window.blit(lose_text1, (W // 2 - 200, H // 2 - 20))
         lose_text2 = font1.render(f'Ваш счёт {score}', True, (255, 0, 0))
         window.blit(lose_text2, (W // 2 - 100, H // 2 + 20))
-
-        # window.blit(cactus, (player_x, player_y))
 
     display.update()
     clock.tick(60)
